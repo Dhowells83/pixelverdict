@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 
 interface ReviewItem {
   id: string;
@@ -19,7 +19,10 @@ interface FilterProps {
 export default function ReviewFilter({ initialReviews }: FilterProps) {
   const [search, setSearch] = useState('');
   const [minRating, setMinRating] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 12;
 
+  // Filter reviews based on search & rating
   const filteredReviews = initialReviews.filter((review) => {
     const starRating = review.score / 2;
     const matchesSearch = 
@@ -31,6 +34,16 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
 
     return matchesSearch && matchesRating;
   });
+
+  // Reset to page 1 whenever search or rating filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, minRating]);
+
+  // Calculate paginated slice
+  const totalPages = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedReviews = filteredReviews.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div>
@@ -79,64 +92,103 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
       <div className="flex justify-between items-center mb-6 border-b border-slate-800/80 pb-3">
         <h2 className="text-xl font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <span className="w-2.5 h-2.5 bg-cyan-400 rounded-xs shadow-[0_0_8px_#06b6d4]"></span>
-          Filtered Results
+          All Verdicts
         </h2>
         <span className="text-xs font-mono-tech text-slate-500">
-          // SHOWING {filteredReviews.length} OF {initialReviews.length}
+          // SHOWING {paginatedReviews.length} OF {filteredReviews.length} (PAGE {currentPage} OF {totalPages || 1})
         </span>
       </div>
 
       {/* Filtered Review Cards Grid */}
-      {filteredReviews.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredReviews.map((review) => {
-            const starScore = (review.score / 2).toFixed(1);
-            return (
-              <a 
-                key={review.id}
-                href={`/reviews/${review.id}`} 
-                className="group bg-[#131b2e]/70 rounded-2xl overflow-hidden hover:-translate-y-1.5 transition-all duration-300 border border-purple-900/40 hover:border-purple-500/70 flex flex-col shadow-[0_0_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_35px_rgba(168,85,247,0.3)] backdrop-blur-md"
-              >
-                <div className="relative h-52 w-full overflow-hidden bg-slate-950">
-                  <img 
-                    src={review.coverImage} 
-                    alt={review.gameTitle} 
-                    className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent"></div>
-                  
-                  <div className="absolute top-3 right-3 bg-slate-950/80 border border-amber-500/40 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-lg">
-                    <span className="text-amber-400 text-sm">★</span>
-                    <span className="text-xs font-bold text-amber-300 font-mono-tech">{starScore}/5</span>
+      {paginatedReviews.length > 0 ? (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedReviews.map((review) => {
+              const starScore = (review.score / 2).toFixed(1);
+              return (
+                <a 
+                  key={review.id}
+                  href={`/reviews/${review.id}`} 
+                  className="group bg-[#131b2e]/70 rounded-2xl overflow-hidden hover:-translate-y-1.5 transition-all duration-300 border border-purple-900/40 hover:border-purple-500/70 flex flex-col shadow-[0_0_25px_rgba(0,0,0,0.6)] hover:shadow-[0_0_35px_rgba(168,85,247,0.3)] backdrop-blur-md"
+                >
+                  <div className="relative h-52 w-full overflow-hidden bg-slate-950">
+                    <img 
+                      src={review.coverImage} 
+                      alt={review.gameTitle} 
+                      className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent"></div>
+                    
+                    <div className="absolute top-3 right-3 bg-slate-950/80 border border-amber-500/40 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+                      <span className="text-amber-400 text-sm">★</span>
+                      <span className="text-xs font-bold text-amber-300 font-mono-tech">{starScore}/5</span>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="p-6 flex-grow flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-wider mb-2">
-                      <span className="text-cyan-400">{review.genre}</span>
-                      <span className="text-slate-600">•</span>
-                      <span className="text-slate-400">{review.platform}</span>
+                  
+                  <div className="p-6 flex-grow flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-wider mb-2">
+                        <span className="text-cyan-400">{review.genre}</span>
+                        <span className="text-slate-600">•</span>
+                        <span className="text-slate-400">{review.platform}</span>
+                      </div>
+                      
+                      <h3 className="text-2xl font-heading font-bold text-white group-hover:text-purple-300 transition-colors tracking-tight">
+                        {review.gameTitle}
+                      </h3>
+                      
+                      <p className="text-sm text-slate-400 mt-2 line-clamp-2 leading-relaxed italic">
+                        "{review.verdict}"
+                      </p>
                     </div>
                     
-                    <h3 className="text-2xl font-heading font-bold text-white group-hover:text-purple-300 transition-colors tracking-tight">
-                      {review.gameTitle}
-                    </h3>
-                    
-                    <p className="text-sm text-slate-400 mt-2 line-clamp-2 leading-relaxed italic">
-                      "{review.verdict}"
-                    </p>
+                    <div className="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs font-mono-tech text-slate-500">
+                      <span className="group-hover:text-slate-300 transition-colors">By {review.author}</span>
+                      <span>{review.date}</span>
+                    </div>
                   </div>
-                  
-                  <div className="mt-6 pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs font-mono-tech text-slate-500">
-                    <span className="group-hover:text-slate-300 transition-colors">By {review.author}</span>
-                    <span>{review.date}</span>
-                  </div>
-                </div>
-              </a>
-            );
-          })}
-        </div>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-3 mt-12 font-mono-tech">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="px-4 py-2 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 disabled:opacity-40 disabled:hover:border-slate-800 text-slate-300 text-xs font-bold transition-all"
+              >
+                ← PREV
+              </button>
+
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
+                      currentPage === page
+                        ? 'bg-purple-600 text-white shadow-[0_0_12px_rgba(168,85,247,0.5)]'
+                        : 'bg-[#131b2e] text-slate-400 border border-slate-800 hover:border-slate-700'
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="px-4 py-2 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 disabled:opacity-40 disabled:hover:border-slate-800 text-slate-300 text-xs font-bold transition-all"
+              >
+                NEXT →
+              </button>
+            </div>
+          )}
+        </>
       ) : (
         <div className="text-center py-16 bg-[#131b2e]/30 border border-slate-800/80 rounded-2xl">
           <p className="text-slate-400 font-mono-tech text-sm">// NO VERDICTS FOUND MATCHING YOUR CRITERIA</p>
