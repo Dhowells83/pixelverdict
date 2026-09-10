@@ -1,5 +1,6 @@
 ﻿---
 import Layout from '../layouts/Layout.astro';
+import ReviewCarousel from '../components/ReviewCarousel';
 import ReviewFilter from '../components/ReviewFilter';
 import { getCollection } from 'astro:content';
 
@@ -20,8 +21,8 @@ const formattedReviews = reviews
 ---
 
 <Layout title="Game Reviews & Ratings">
-  <!-- Hero Section with Glowing Effects -->
-  <section class="py-16 md:py-24 text-center relative my-4">
+  <!-- Hero Section -->
+  <section class="py-12 md:py-16 text-center relative my-2">
     <div class="glow-purple absolute top-1/2 left-1/2 w-[480px] h-[280px] bg-purple-600/50 blur-[90px] rounded-full pointer-events-none -z-10"></div>
     <div class="glow-cyan absolute top-1/2 left-1/2 w-[320px] h-[200px] bg-cyan-400/40 blur-[75px] rounded-full pointer-events-none -z-10"></div>
 
@@ -29,7 +30,7 @@ const formattedReviews = reviews
       // HIGH-PRECISION EVALUATIONS
     </span>
     
-    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight mb-6 text-white uppercase leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight mb-4 text-white uppercase leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
       NO NOISE. JUST <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">VERDICTS.</span>
     </h1>
     
@@ -38,8 +39,17 @@ const formattedReviews = reviews
     </p>
   </section>
 
+  <!-- Featured Reviews Carousel -->
+  <section class="py-4">
+    <div class="flex items-center gap-2 mb-2 font-mono-tech text-xs text-purple-400 font-bold uppercase tracking-widest justify-center">
+      <span class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></span>
+      // FEATURED VERDICTS
+    </div>
+    <ReviewCarousel client:load reviews={formattedReviews} />
+  </section>
+
   <!-- Interactive Filter & Review Grid -->
-  <section id="reviews" class="py-4">
+  <section id="reviews" class="py-8">
     <ReviewFilter client:load initialReviews={formattedReviews} />
   </section>
 </Layout>
