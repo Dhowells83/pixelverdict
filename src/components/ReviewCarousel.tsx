@@ -21,6 +21,7 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   if (!reviews || reviews.length === 0) return null;
 
@@ -34,7 +35,6 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length);
   };
 
-  // Auto-play timer (switches every 5000ms unless hovered)
   useEffect(() => {
     if (isPaused) return;
 
@@ -45,56 +45,93 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
     return () => clearInterval(timer);
   }, [currentIndex, isPaused, reviews.length]);
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setIsPaused(false);
+    setMousePos({ x: 0, y: 0 });
+  };
+
   const currentReview = reviews[currentIndex];
   const starScore = (currentReview.score / 2).toFixed(1);
 
-  const slideVariants = {
+  const card3DVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 300 : -300,
+      x: dir > 0 ? 320 : -320,
+      y: 20,
+      z: -300,
+      rotateY: dir > 0 ? 45 : -45,
+      rotateX: 15,
       opacity: 0,
-      scale: 0.95,
+      scale: 0.75,
     }),
     center: {
       x: 0,
+      y: 0,
+      z: 0,
+      rotateY: mousePos.x * 20,
+      rotateX: -mousePos.y * 20,
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.45, ease: "easeOut" },
+      transition: {
+        duration: 0.55,
+        ease: [0.16, 1, 0.3, 1],
+      },
     },
     exit: (dir: number) => ({
-      x: dir < 0 ? 300 : -300,
+      x: dir < 0 ? 320 : -320,
+      y: -20,
+      z: -300,
+      rotateY: dir < 0 ? 45 : -45,
+      rotateX: -15,
       opacity: 0,
-      scale: 0.95,
-      transition: { duration: 0.35, ease: "easeIn" },
+      scale: 0.75,
+      transition: { duration: 0.45, ease: 'easeInOut' },
     }),
   };
 
   return (
-    <div 
-      className="relative w-full max-w-4xl mx-auto my-8 px-2"
+    <div
+      className="relative w-full max-w-4xl mx-auto my-10 px-2"
+      style={{ perspective: '1000px' }}
       onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Carousel Container */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#131b2e]/80 border border-purple-900/40 shadow-[0_0_40px_rgba(168,85,247,0.15)] backdrop-blur-md min-h-[420px] md:min-h-[360px] flex items-center">
+      {/* 3D Stage */}
+      <div 
+        className="relative min-h-[420px] md:min-h-[360px] flex items-center justify-center cursor-pointer"
+        style={{ transformStyle: 'preserve-3d' }}
+      >
         <AnimatePresence custom={direction} mode="wait">
-          <motion.div
+          <motion.a
             key={currentIndex}
+            href={`/reviews/${currentReview.id}`}
             custom={direction}
-            variants={slideVariants}
+            variants={card3DVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            className="w-full grid grid-cols-1 md:grid-cols-12 h-full"
+            className="group w-full grid grid-cols-1 md:grid-cols-12 rounded-3xl bg-[#131b2e]/95 border-2 border-purple-500/50 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(168,85,247,0.3)] backdrop-blur-xl overflow-hidden block"
+            style={{ transformStyle: 'preserve-3d' }}
           >
             {/* Image Side */}
             <div className="md:col-span-6 relative h-56 md:h-full overflow-hidden bg-slate-950">
               <img
                 src={currentReview.coverImage}
                 alt={currentReview.gameTitle}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-cyan-400/20 pointer-events-none"></div>
               <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#090d16] via-transparent to-transparent"></div>
-              <div className="absolute top-4 left-4 bg-slate-950/80 border border-amber-500/40 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+
+              {/* Star Badge */}
+              <div className="absolute top-4 left-4 bg-slate-950/90 border border-amber-500/50 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
                 <span className="text-amber-400 text-sm">★</span>
                 <span className="text-xs font-bold text-amber-300 font-mono-tech">{starScore}/5</span>
               </div>
@@ -109,7 +146,7 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
                   <span className="text-slate-400">{currentReview.platform}</span>
                 </div>
 
-                <h3 className="text-3xl font-heading font-black text-white tracking-tight mb-3">
+                <h3 className="text-3xl font-heading font-black text-white group-hover:text-purple-300 tracking-tight mb-3 transition-colors">
                   {currentReview.gameTitle}
                 </h3>
 
@@ -119,55 +156,57 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
               </div>
 
               <div className="pt-4 border-t border-slate-800/80 flex justify-between items-center text-xs font-mono-tech">
-                <a
-                  href={`/reviews/${currentReview.id}`}
-                  className="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.4)]"
-                >
+                <span className="px-4 py-2 bg-purple-600 group-hover:bg-purple-500 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(168,85,247,0.5)] group-hover:shadow-[0_0_30px_rgba(168,85,247,0.8)] inline-block">
                   READ VERDICT →
-                </a>
+                </span>
                 <span className="text-slate-500">By {currentReview.author}</span>
               </div>
             </div>
-          </motion.div>
+          </motion.a>
         </AnimatePresence>
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between mt-4 px-2">
-        {/* Pagination Dots */}
+      <div className="flex items-center justify-between mt-6 px-2">
         <div className="flex items-center gap-2">
           {reviews.map((_, idx) => (
             <button
               key={idx}
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
                 setDirection(idx > currentIndex ? 1 : -1);
                 setCurrentIndex(idx);
               }}
               className={`h-2 rounded-full transition-all ${
                 idx === currentIndex
-                  ? 'w-8 bg-purple-500 shadow-[0_0_10px_#a855f7]'
+                  ? 'w-8 bg-purple-500 shadow-[0_0_12px_#a855f7]'
                   : 'w-2 bg-slate-800 hover:bg-slate-700'
               }`}
             />
           ))}
         </div>
 
-        {/* Arrow Buttons & Pause Status Indicator */}
         <div className="flex items-center gap-3">
           {isPaused && (
-            <span className="text-[10px] font-mono-tech text-purple-400 uppercase tracking-widest">// PAUSED</span>
+            <span className="text-[10px] font-mono-tech text-purple-400 uppercase tracking-widest">// CLICK TO READ</span>
           )}
           <div className="flex items-center gap-2">
             <button
-              onClick={prevSlide}
-              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
+              onClick={(e) => {
+                e.preventDefault();
+                prevSlide();
+              }}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg"
               aria-label="Previous Slide"
             >
               ←
             </button>
             <button
-              onClick={nextSlide}
-              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
+              onClick={(e) => {
+                e.preventDefault();
+                nextSlide();
+              }}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg"
               aria-label="Next Slide"
             >
               →
