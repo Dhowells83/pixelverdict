@@ -10,53 +10,80 @@ interface HardwareSpec {
 }
 
 interface PerformanceData {
-  ps5: HardwareSpec;
-  xboxSeriesX: HardwareSpec;
+  rtx4090: HardwareSpec;
   rtx4070: HardwareSpec;
   rtx3060: HardwareSpec;
+  rx7600: HardwareSpec;
+  ps5pro: HardwareSpec;
+  ps5: HardwareSpec;
+  xboxSeriesX: HardwareSpec;
   steamDeck: HardwareSpec;
 }
 
 const defaultSpecs: PerformanceData = {
-  ps5: {
-    preset: 'Performance Mode',
-    targetRes: 'Dynamic 1440p',
-    targetFPS: '60 FPS (Rock Solid)',
-    upscaling: 'PSSR / FSR 3',
-    settingsProfile: 'High Textures, Medium Shadows',
-    notes: 'Quality mode offers 4K @ 30 FPS with Ray Tracing enabled.'
-  },
-  xboxSeriesX: {
-    preset: 'Performance Mode',
-    targetRes: 'Dynamic 1800p',
-    targetFPS: '60 FPS (Occasional drops)',
-    upscaling: 'FSR 3 Quality',
-    settingsProfile: 'High Textures, High Reflections',
-    notes: 'VRR recommended for intense boss fights.'
+  rtx4090: {
+    preset: 'Enthusiast 4K Max',
+    targetRes: '4K Native',
+    targetFPS: '120+ FPS',
+    upscaling: 'DLSS 3 Frame Gen (Quality)',
+    settingsProfile: 'Path Tracing / Ultra Settings',
+    notes: 'Maxed out graphical fidelity with zero performance bottlenecks.'
   },
   rtx4070: {
-    preset: 'Ultra + Ray Tracing',
-    targetRes: '1440p / 4K',
+    preset: '1440p High Precision',
+    targetRes: '1440p / Dynamic 4K',
     targetFPS: '90 - 120 FPS',
     upscaling: 'DLSS 3 Frame Gen (Quality)',
-    settingsProfile: 'Maximum / Ultra Settings',
-    notes: 'Flawless performance with Frame Generation enabled.'
+    settingsProfile: 'High / Ultra Hybrid',
+    notes: 'Ideal balance for high-refresh-rate gaming.'
   },
   rtx3060: {
-    preset: 'High 1080p',
+    preset: 'Mainstream 1080p',
     targetRes: '1080p Native',
     targetFPS: '60 - 75 FPS',
     upscaling: 'DLSS Quality',
     settingsProfile: 'Medium Shadows, High Textures',
-    notes: 'Disable Motion Blur and Ambient Occlusion for best pacing.'
+    notes: 'Solid 1080p performance with ray tracing turned off.'
+  },
+  rx7600: {
+    preset: 'Budget PC Gaming',
+    targetRes: '1080p Native',
+    targetFPS: '60 FPS Locked',
+    upscaling: 'FSR 3 Quality',
+    settingsProfile: 'Medium Preset',
+    notes: 'Great entry-level performance; disable motion blur for frame pacing.'
+  },
+  ps5pro: {
+    preset: 'Pro Enhanced',
+    targetRes: 'Dynamic 4K (PSSR)',
+    targetFPS: '60 FPS (Ray Tracing On)',
+    upscaling: 'PlayStation Spectral Super Resolution',
+    settingsProfile: 'High Quality Preset',
+    notes: 'Combines fidelity mode visuals with performance mode framerates.'
+  },
+  ps5: {
+    preset: 'Console Performance Mode',
+    targetRes: 'Dynamic 1440p',
+    targetFPS: '60 FPS',
+    upscaling: 'FSR 2.2',
+    settingsProfile: 'Medium / High Mix',
+    notes: 'Quality Mode offers 4K @ 30 FPS.'
+  },
+  xboxSeriesX: {
+    preset: 'Console Performance Mode',
+    targetRes: 'Dynamic 1800p',
+    targetFPS: '60 FPS',
+    upscaling: 'FSR 2.2',
+    settingsProfile: 'High Textures, Medium Reflections',
+    notes: 'VRR support eliminates frame drops during heavy combat.'
   },
   steamDeck: {
     preset: 'Handheld Optimized',
     targetRes: '800p',
-    targetFPS: '40 FPS / 40Hz Locked',
+    targetFPS: '40 FPS / 40Hz',
     upscaling: 'FSR 2.2 Balanced',
-    settingsProfile: 'Low/Medium Hybrid',
-    notes: 'Battery life ~2.5 hours. TDP set to 12W for maximum stability.'
+    settingsProfile: 'Low / Medium Hybrid',
+    notes: 'Battery life ~2.5 hours. TDP capped at 12W for stability.'
   }
 };
 
@@ -65,15 +92,18 @@ export default function PerformanceMatrix() {
   const activeSpec = defaultSpecs[selectedPlatform];
 
   const platforms = [
-    { id: 'rtx4070', label: 'PC (RTX 4070 / RX 7800)', icon: '💻' },
+    { id: 'rtx4090', label: 'PC (RTX 4090 / 7900 XTX)', icon: '⚡' },
+    { id: 'rtx4070', label: 'PC (RTX 4070 / 7800 XT)', icon: '💻' },
     { id: 'rtx3060', label: 'PC (RTX 3060 / Mainstream)', icon: '🖥️' },
+    { id: 'rx7600', label: 'PC (RX 7600 / Budget)', icon: '🛠️' },
+    { id: 'ps5pro', label: 'PlayStation 5 Pro', icon: '✨' },
     { id: 'ps5', label: 'PlayStation 5', icon: '🎮' },
     { id: 'xboxSeriesX', label: 'Xbox Series X', icon: '🟩' },
     { id: 'steamDeck', label: 'Steam Deck', icon: '🕹️' },
   ];
 
   return (
-    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] my-10">
+    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
         <h3 className="text-xl font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-xs bg-cyan-400 shadow-[0_0_8px_#06b6d4]"></span>
@@ -88,7 +118,7 @@ export default function PerformanceMatrix() {
           <button
             key={p.id}
             onClick={() => setSelectedPlatform(p.id as keyof PerformanceData)}
-            className={`px-4 py-2 rounded-xl text-xs font-mono-tech font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+            className={`px-3.5 py-2 rounded-xl text-xs font-mono-tech font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
               selectedPlatform === p.id
                 ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] border border-purple-400/50'
                 : 'bg-[#05070e] text-slate-400 border border-slate-800 hover:border-slate-700'
