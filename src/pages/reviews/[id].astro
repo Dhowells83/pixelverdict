@@ -13,9 +13,18 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { title, gameTitle, description, score, verdict, coverImage, platforms, genre, publisher, pros, cons, author, releaseDate } = entry.data;
+const { title, gameTitle, description, score, verdict, coverImage, platforms, genre, author, releaseDate, pros, cons } = entry.data;
 
-// JSON-LD Schema for Google Rich Snippets
+const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://pixelverdict.com').href;
+const shareText = encodeURIComponent(`Check out the PixelVerdict review for ${gameTitle}: "${verdict}"`);
+const encodedURL = encodeURIComponent(canonicalURL);
+
+// Social share links
+const twitterShare = `https://twitter.com/intent/tweet?text=${shareText}&url=${encodedURL}`;
+const redditShare = `https://www.reddit.com/submit?url=${encodedURL}&title=${encodeURIComponent(`${gameTitle} Review - PixelVerdict`)}`;
+const facebookShare = `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}`;
+
+// JSON-LD Schema
 const schemaData = {
   "@context": "https://schema.org/",
   "@type": "Review",
@@ -42,7 +51,6 @@ const schemaData = {
 ---
 
 <Layout title={title} description={description} image={coverImage}>
-  <!-- Inject Schema for Google Search Star Snippets -->
   <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
 
   <article class="max-w-4xl mx-auto relative my-4">
@@ -68,7 +76,7 @@ const schemaData = {
     </div>
 
     <!-- Rating & Verdict Highlight Box -->
-    <div class="bg-[#131b2e]/80 border border-purple-500/30 backdrop-blur-md rounded-2xl p-6 mb-10 flex flex-col md:flex-row gap-6 items-center justify-between shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+    <div class="bg-[#131b2e]/80 border border-purple-500/30 backdrop-blur-md rounded-2xl p-6 mb-8 flex flex-col md:flex-row gap-6 items-center justify-between shadow-[0_0_30px_rgba(168,85,247,0.15)]">
       <div class="space-y-1">
         <span class="text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-widest">// PixelVerdict Final Word</span>
         <p class="text-xl text-slate-100 italic font-medium leading-relaxed">"{verdict}"</p>
@@ -76,6 +84,54 @@ const schemaData = {
       <div class="flex flex-col items-center gap-1 bg-[#05070e]/90 px-6 py-4 rounded-xl border border-slate-800 shrink-0 shadow-inner">
         <span class="text-xs font-mono-tech text-slate-400 uppercase tracking-wider">Score</span>
         <StarRating score={score} />
+      </div>
+    </div>
+
+    <!-- Social Share Bar -->
+    <div class="bg-[#131b2e]/60 border border-slate-800 rounded-2xl p-4 mb-10 flex flex-wrap items-center justify-between gap-4 backdrop-blur-md">
+      <span class="text-xs font-mono-tech font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_8px_#06b6d4]"></span>
+        // SHARE VERDICT
+      </span>
+
+      <div class="flex items-center gap-2 font-mono-tech text-xs">
+        <!-- X / Twitter -->
+        <a 
+          href={twitterShare} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="px-3 py-1.5 rounded-xl bg-[#05070e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white transition-all flex items-center gap-1.5"
+        >
+          <span>𝕏</span> Share
+        </a>
+
+        <!-- Reddit -->
+        <a 
+          href={redditShare} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="px-3 py-1.5 rounded-xl bg-[#05070e] border border-slate-800 hover:border-amber-500/60 text-slate-300 hover:text-amber-400 transition-all flex items-center gap-1.5"
+        >
+          <span>r/</span> Reddit
+        </a>
+
+        <!-- Facebook -->
+        <a 
+          href={facebookShare} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="px-3 py-1.5 rounded-xl bg-[#05070e] border border-slate-800 hover:border-blue-500/60 text-slate-300 hover:text-blue-400 transition-all flex items-center gap-1.5"
+        >
+          <span>f</span> Facebook
+        </a>
+
+        <!-- Copy Link Button -->
+        <button 
+          id="copy-link-btn"
+          className="px-3 py-1.5 rounded-xl bg-purple-600/80 hover:bg-purple-600 text-white font-bold transition-all shadow-[0_0_12px_rgba(168,85,247,0.3)] flex items-center gap-1.5"
+        >
+          📋 <span id="copy-text">Copy Link</span>
+        </button>
       </div>
     </div>
 
@@ -113,4 +169,22 @@ const schemaData = {
       </div>
     </div>
   </article>
+
+  <!-- Client-side script for Copy Link clipboard action -->
+  <script>
+    const btn = document.getElementById('copy-link-btn');
+    const label = document.getElementById('copy-text');
+
+    btn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (label) label.textContent = 'Copied!';
+        setTimeout(() => {
+          if (label) label.textContent = 'Copy Link';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy URL: ', err);
+      }
+    });
+  </script>
 </Layout>
