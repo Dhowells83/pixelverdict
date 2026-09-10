@@ -6,7 +6,6 @@ import { getCollection } from 'astro:content';
 
 const reviews = await getCollection('reviews');
 
-// Format all reviews sorted by release date for the main review list/filter
 const formattedReviews = reviews
   .sort((a, b) => b.data.releaseDate.getTime() - a.data.releaseDate.getTime())
   .map((review) => ({
@@ -16,37 +15,37 @@ const formattedReviews = reviews
     coverImage: review.data.coverImage,
     genre: review.data.genre,
     platform: review.data.platforms[0],
+    platforms: review.data.platforms,
     author: review.data.author,
     date: review.data.releaseDate.toLocaleDateString(),
     score: review.data.score,
   }));
 
-// Top 5 highest rated reviews specifically for the carousel
 const topRatedReviews = [...formattedReviews]
   .sort((a, b) => b.score - a.score)
   .slice(0, 5);
 ---
 
-<Layout title="Game Reviews & Ratings">
-  <!-- Hero Section -->
+<Layout title="Game Reviews & Technical Benchmarks">
+  <!-- Hero Banner -->
   <section class="py-12 md:py-16 text-center relative my-2">
-    <div class="glow-purple absolute top-1/2 left-1/2 w-[480px] h-[280px] bg-purple-600/50 blur-[90px] rounded-full pointer-events-none -z-10"></div>
-    <div class="glow-cyan absolute top-1/2 left-1/2 w-[320px] h-[200px] bg-cyan-400/40 blur-[75px] rounded-full pointer-events-none -z-10"></div>
+    <div class="glow-purple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-purple-600/25 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+    <div class="glow-cyan absolute top-1/2 left-1/3 w-[350px] h-[220px] bg-cyan-400/20 blur-[90px] rounded-full pointer-events-none -z-10"></div>
 
-    <span class="inline-block px-3.5 py-1 bg-purple-950/80 border border-purple-500/50 rounded-full text-xs font-mono-tech font-bold text-purple-300 mb-6 shadow-[0_0_20px_rgba(168,85,247,0.35)]">
+    <span class="inline-block px-3.5 py-1 bg-purple-950/80 border border-purple-500/40 rounded-full text-xs font-mono-tech font-bold text-purple-300 mb-6 shadow-[0_0_20px_rgba(168,85,247,0.25)]">
       // HIGH-PRECISION EVALUATIONS
     </span>
     
-    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight mb-4 text-white uppercase leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+    <h1 class="text-4xl md:text-6xl lg:text-7xl font-heading font-black tracking-tight mb-4 text-white uppercase leading-none drop-shadow-md">
       NO NOISE. JUST <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">VERDICTS.</span>
     </h1>
     
-    <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-normal drop-shadow-md">
+    <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-normal">
       Unfiltered analysis, technical breakdowns, and 5-star ratings for modern PC, PlayStation, Xbox, and Switch releases.
     </p>
   </section>
 
-  <!-- Featured Top 5 Carousel -->
+  <!-- Top Rated Review Carousel -->
   <section class="py-4">
     <div class="flex items-center gap-2 mb-2 font-mono-tech text-xs text-purple-400 font-bold uppercase tracking-widest justify-center">
       <span class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></span>

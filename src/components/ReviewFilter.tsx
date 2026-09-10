@@ -25,20 +25,17 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 12;
 
-  // Extract unique genres
   const genres = useMemo(() => {
     const list = Array.from(new Set(initialReviews.map((r) => r.genre).filter(Boolean)));
     return ['ALL', ...list.sort()];
   }, [initialReviews]);
 
-  // Extract all unique platforms across all reviews
   const platforms = useMemo(() => {
     const allPlatforms = initialReviews.flatMap((r) => r.platforms || [r.platform]).filter(Boolean);
     const list = Array.from(new Set(allPlatforms));
     return ['ALL', ...list.sort()];
   }, [initialReviews]);
 
-  // Filter reviews based on search text, dropdowns, and rating
   const filteredReviews = useMemo(() => {
     return initialReviews.filter((review) => {
       const starRating = review.score / 2;
@@ -50,7 +47,6 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
         reviewPlatforms.some(p => p.toLowerCase().includes(search.toLowerCase()));
 
       const matchesGenre = selectedGenre === 'ALL' || review.genre.toLowerCase() === selectedGenre.toLowerCase();
-      
       const matchesPlatform =
         selectedPlatform === 'ALL' ||
         reviewPlatforms.some(p => p.toLowerCase() === selectedPlatform.toLowerCase());
@@ -61,12 +57,10 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
     });
   }, [initialReviews, search, selectedGenre, selectedPlatform, minRating]);
 
-  // Reset to page 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [search, selectedGenre, selectedPlatform, minRating]);
 
-  // Pagination bounds
   const totalPages = Math.ceil(filteredReviews.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedReviews = filteredReviews.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -81,7 +75,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
   return (
     <div>
       {/* Controls Panel */}
-      <div className="bg-[#131b2e]/80 border border-purple-900/40 p-4 md:p-6 rounded-2xl backdrop-blur-md mb-8 flex flex-col gap-4 shadow-[0_0_25px_rgba(0,0,0,0.5)]">
+      <div className="bg-[#131b2e]/80 border border-purple-900/40 p-4 md:p-6 rounded-2xl backdrop-blur-md mb-8 flex flex-col gap-4 shadow-[0_0_25px_rgba(0,0,0,0.4)]">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           
           {/* Search Input */}
@@ -91,7 +85,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
               placeholder="Search games, titles, or mechanics..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-[#05070e] border border-slate-800 focus:border-purple-500 rounded-xl px-4 py-2.5 text-xs font-mono-tech text-slate-100 outline-none transition-colors placeholder:text-slate-600"
+              className="w-full bg-[#070a12] border border-slate-800 focus:border-purple-500 rounded-xl px-4 py-2.5 text-xs font-mono-tech text-slate-100 outline-none transition-colors placeholder:text-slate-600"
             />
             {search && (
               <button
@@ -108,7 +102,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="w-full bg-[#05070e] border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2.5 text-xs font-mono-tech text-slate-200 outline-none transition-colors cursor-pointer"
+              className="w-full bg-[#070a12] border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2.5 text-xs font-mono-tech text-slate-200 outline-none transition-colors cursor-pointer"
             >
               <option value="ALL">GENRE: ALL</option>
               {genres.filter(g => g !== 'ALL').map((genre) => (
@@ -124,7 +118,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
             <select
               value={selectedPlatform}
               onChange={(e) => setSelectedPlatform(e.target.value)}
-              className="w-full bg-[#05070e] border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2.5 text-xs font-mono-tech text-slate-200 outline-none transition-colors cursor-pointer"
+              className="w-full bg-[#070a12] border border-slate-800 focus:border-purple-500 rounded-xl px-3 py-2.5 text-xs font-mono-tech text-slate-200 outline-none transition-colors cursor-pointer"
             >
               <option value="ALL">PLATFORM: ALL</option>
               {platforms.filter(p => p !== 'ALL').map((platform) => (
@@ -147,7 +141,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono-tech font-bold transition-all whitespace-nowrap ${
                   minRating === stars
                     ? 'bg-purple-600 text-white shadow-[0_0_12px_rgba(168,85,247,0.5)]'
-                    : 'bg-[#05070e] text-slate-400 border border-slate-800 hover:border-slate-700'
+                    : 'bg-[#070a12] text-slate-400 border border-slate-800 hover:border-slate-700'
                 }`}
               >
                 {stars === 0 ? 'ALL' : `${stars}+ ★`}
@@ -197,7 +191,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
                       alt={review.gameTitle}
                       className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#090d16] via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d1322] via-transparent to-transparent"></div>
 
                     <div className="absolute top-3 right-3 bg-slate-950/80 border border-amber-500/40 px-3 py-1 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-lg">
                       <span className="text-amber-400 text-sm">★</span>

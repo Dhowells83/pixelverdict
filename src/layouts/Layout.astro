@@ -7,7 +7,7 @@ interface Props {
 
 const { 
   title, 
-  description = "PixelVerdict - High-precision video game evaluations, technical breakdowns, and star ratings.",
+  description = "PixelVerdict - High-precision gaming evaluations, technical benchmarks, and interactive hardware matrices.",
   image = "/og-default.png"
 } = Astro.props;
 
@@ -15,93 +15,71 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site || 'https://pixelver
 ---
 
 <!doctype html>
-<html lang="en" class="bg-[#05070e] text-slate-100 scroll-smooth">
+<html lang="en" class="bg-[#070a12] text-slate-100 scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
-
-    <!-- Primary Meta Tags -->
     <title>{title} | PixelVerdict</title>
     <meta name="title" content={`${title} | PixelVerdict`} />
     <meta name="description" content={description} />
 
-    <!-- Google Fonts: Inter, JetBrains Mono, Orbitron & Press Start 2P -->
+    <!-- Google Fonts: Inter, JetBrains Mono, Orbitron, and subtle pixel accent -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700;800&family=Orbitron:wght@700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | PixelVerdict`} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={`${title} | PixelVerdict`} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={image} />
-
     <style is:global>
-      .font-pixel {
-        font-family: 'Press Start 2P', monospace;
-      }
       .font-heading {
         font-family: 'Orbitron', sans-serif;
       }
       .font-mono-tech {
         font-family: 'JetBrains Mono', monospace;
       }
-      
-      /* Crisp Pixel Rendering Utility */
-      .pixel-rendering {
-        image-rendering: pixelated;
-        image-rendering: crisp-edges;
+      .font-pixel-accent {
+        font-family: 'Press Start 2P', monospace;
       }
     </style>
   </head>
-  <body class="min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white font-sans bg-[#05070e]">
+  <body class="min-h-screen flex flex-col justify-between selection:bg-purple-600 selection:text-white font-sans bg-[#070a12]">
+    
     <!-- Top Navigation Header -->
-    <header class="sticky top-0 z-50 bg-[#090d16]/90 border-b border-purple-900/40 backdrop-blur-md">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <!-- Pixelated Logo -->
+    <header class="sticky top-0 z-50 bg-[#0d1322]/90 border-b border-purple-900/30 backdrop-blur-md">
+      <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
+        <!-- Logo -->
         <a href="/" class="group flex items-center gap-3 transition-transform hover:scale-105">
-          <div class="w-8 h-8 bg-purple-600 border-2 border-purple-400 flex items-center justify-center rounded-sm shadow-[0_0_12px_#a855f7] pixel-rendering">
-            <span class="text-white font-pixel text-xs tracking-tighter">P</span>
+          <div class="w-8 h-8 bg-gradient-to-tr from-purple-600 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-white shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+            <span class="font-pixel-accent text-[10px]">P</span>
           </div>
-          <span class="font-pixel text-sm md:text-base tracking-tighter text-white group-hover:text-purple-300 transition-colors drop-shadow-[2px_2px_0px_rgba(168,85,247,0.8)]">
+          <span class="font-heading font-black text-lg tracking-tight text-white group-hover:text-purple-300 transition-colors">
             PIXEL<span class="text-cyan-400">VERDICT</span>
           </span>
         </a>
 
         <!-- Header Nav Links -->
         <nav class="flex items-center gap-6 font-mono-tech text-xs font-bold">
-          <a href="/#reviews" class="text-slate-300 hover:text-cyan-400 transition-colors uppercase tracking-wider">// REVIEWS</a>
-          <a href="/#reviews" class="hidden sm:inline-block px-3 py-1.5 rounded-lg bg-purple-950/80 border border-purple-500/50 text-purple-300 hover:bg-purple-600 hover:text-white transition-all shadow-[0_0_10px_rgba(168,85,247,0.3)]">
+          <a href="/#reviews" class="text-slate-300 hover:text-cyan-400 transition-colors tracking-wider uppercase">// ALL REVIEWS</a>
+          <a href="/#reviews" class="px-3.5 py-1.5 rounded-xl bg-purple-600/80 hover:bg-purple-600 text-white transition-all shadow-[0_0_12px_rgba(168,85,247,0.3)]">
             SEARCH
           </a>
         </nav>
       </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow">
       <slot />
     </main>
 
-    <!-- Retro Footer -->
-    <footer class="border-t border-slate-800/80 bg-[#05070e] py-8 text-center text-xs font-mono-tech text-slate-500">
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-[#090d18] py-8 text-center text-xs font-mono-tech text-slate-500">
       <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-xs bg-purple-500 animate-pulse"></span>
-          <span class="font-pixel text-[10px] text-slate-400">PIXELVERDICT</span>
+          <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+          <span class="font-heading font-bold text-slate-300">PIXELVERDICT</span>
         </div>
         <p>© {new Date().getFullYear()} PixelVerdict. All rights reserved.</p>
         <div class="flex items-center gap-4 text-slate-400">
