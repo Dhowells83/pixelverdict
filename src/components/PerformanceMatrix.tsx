@@ -1,162 +1,145 @@
 ﻿import React, { useState } from 'react';
 
-interface HardwareSpec {
-  preset: string;
+interface GPUConfig {
+  id: string;
+  name: string;
+  tier: number; // 1 (budget) to 4 (enthusiast)
   targetRes: string;
-  targetFPS: string;
-  upscaling: string;
-  settingsProfile: string;
-  notes: string;
+  upscaler: string;
 }
 
-interface PerformanceData {
-  rtx4090: HardwareSpec;
-  rtx4070: HardwareSpec;
-  rtx3060: HardwareSpec;
-  rx7600: HardwareSpec;
-  ps5pro: HardwareSpec;
-  ps5: HardwareSpec;
-  xboxSeriesX: HardwareSpec;
-  steamDeck: HardwareSpec;
+interface CPUConfig {
+  id: string;
+  name: string;
+  tier: number; // 1 (budget) to 4 (enthusiast)
 }
 
-const defaultSpecs: PerformanceData = {
-  rtx4090: {
-    preset: 'Enthusiast 4K Max',
-    targetRes: '4K Native',
-    targetFPS: '120+ FPS',
-    upscaling: 'DLSS 3 Frame Gen (Quality)',
-    settingsProfile: 'Path Tracing / Ultra Settings',
-    notes: 'Maxed out graphical fidelity with zero performance bottlenecks.'
-  },
-  rtx4070: {
-    preset: '1440p High Precision',
-    targetRes: '1440p / Dynamic 4K',
-    targetFPS: '90 - 120 FPS',
-    upscaling: 'DLSS 3 Frame Gen (Quality)',
-    settingsProfile: 'High / Ultra Hybrid',
-    notes: 'Ideal balance for high-refresh-rate gaming.'
-  },
-  rtx3060: {
-    preset: 'Mainstream 1080p',
-    targetRes: '1080p Native',
-    targetFPS: '60 - 75 FPS',
-    upscaling: 'DLSS Quality',
-    settingsProfile: 'Medium Shadows, High Textures',
-    notes: 'Solid 1080p performance with ray tracing turned off.'
-  },
-  rx7600: {
-    preset: 'Budget PC Gaming',
-    targetRes: '1080p Native',
-    targetFPS: '60 FPS Locked',
-    upscaling: 'FSR 3 Quality',
-    settingsProfile: 'Medium Preset',
-    notes: 'Great entry-level performance; disable motion blur for frame pacing.'
-  },
-  ps5pro: {
-    preset: 'Pro Enhanced',
-    targetRes: 'Dynamic 4K (PSSR)',
-    targetFPS: '60 FPS (Ray Tracing On)',
-    upscaling: 'PlayStation Spectral Super Resolution',
-    settingsProfile: 'High Quality Preset',
-    notes: 'Combines fidelity mode visuals with performance mode framerates.'
-  },
-  ps5: {
-    preset: 'Console Performance Mode',
-    targetRes: 'Dynamic 1440p',
-    targetFPS: '60 FPS',
-    upscaling: 'FSR 2.2',
-    settingsProfile: 'Medium / High Mix',
-    notes: 'Quality Mode offers 4K @ 30 FPS.'
-  },
-  xboxSeriesX: {
-    preset: 'Console Performance Mode',
-    targetRes: 'Dynamic 1800p',
-    targetFPS: '60 FPS',
-    upscaling: 'FSR 2.2',
-    settingsProfile: 'High Textures, Medium Reflections',
-    notes: 'VRR support eliminates frame drops during heavy combat.'
-  },
-  steamDeck: {
-    preset: 'Handheld Optimized',
-    targetRes: '800p',
-    targetFPS: '40 FPS / 40Hz',
-    upscaling: 'FSR 2.2 Balanced',
-    settingsProfile: 'Low / Medium Hybrid',
-    notes: 'Battery life ~2.5 hours. TDP capped at 12W for stability.'
-  }
-};
+const gpus: GPUConfig[] = [
+  { id: 'rtx4090', name: 'NVIDIA RTX 4090 (24GB)', tier: 4, targetRes: '4K Ultra', upscaler: 'DLSS 3 Frame Gen' },
+  { id: 'rtx4070', name: 'NVIDIA RTX 4070 Super (12GB)', tier: 3, targetRes: '1440p / Dynamic 4K', upscaler: 'DLSS 3 Quality' },
+  { id: 'rtx3060', name: 'NVIDIA RTX 3060 (12GB)', tier: 2, targetRes: '1080p High', upscaler: 'DLSS Quality' },
+  { id: 'rx7800xt', name: 'AMD Radeon RX 7800 XT (16GB)', tier: 3, targetRes: '1440p Native', upscaler: 'FSR 3 Quality' },
+  { id: 'rx6600', name: 'AMD Radeon RX 6600 (8GB)', tier: 1, targetRes: '1080p Medium', upscaler: 'FSR 2.2 Balanced' },
+  { id: 'ps5pro', name: 'PlayStation 5 Pro APU', tier: 3, targetRes: 'Dynamic 4K', upscaler: 'PSSR' },
+  { id: 'steamdeck', name: 'Steam Deck APU', tier: 1, targetRes: '800p Low', upscaler: 'FSR 2.2' },
+];
+
+const cpus: CPUConfig[] = [
+  { id: '7800x3d', name: 'AMD Ryzen 7 7800X3D / 9800X3D', tier: 4 },
+  { id: 'i714700k', name: 'Intel Core i7-14700K / 13700K', tier: 4 },
+  { id: 'ryzen57600', name: 'AMD Ryzen 5 7600 / 5600X', tier: 2 },
+  { id: 'i512400', name: 'Intel Core i5-12400 / 13400', tier: 2 },
+  { id: 'ryzen3600', name: 'AMD Ryzen 5 3600 / Legacy', tier: 1 },
+  { id: 'console_cpu', name: 'Console / Custom APU CPU', tier: 2 },
+];
 
 export default function PerformanceMatrix() {
-  const [selectedPlatform, setSelectedPlatform] = useState<keyof PerformanceData>('rtx4070');
-  const activeSpec = defaultSpecs[selectedPlatform];
+  const [selectedGpuId, setSelectedGpuId] = useState<string>('rtx4070');
+  const [selectedCpuId, setSelectedCpuId] = useState<string>('7800x3d');
 
-  const platforms = [
-    { id: 'rtx4090', label: 'PC (RTX 4090 / 7900 XTX)', icon: '⚡' },
-    { id: 'rtx4070', label: 'PC (RTX 4070 / 7800 XT)', icon: '💻' },
-    { id: 'rtx3060', label: 'PC (RTX 3060 / Mainstream)', icon: '🖥️' },
-    { id: 'rx7600', label: 'PC (RX 7600 / Budget)', icon: '🛠️' },
-    { id: 'ps5pro', label: 'PlayStation 5 Pro', icon: '✨' },
-    { id: 'ps5', label: 'PlayStation 5', icon: '🎮' },
-    { id: 'xboxSeriesX', label: 'Xbox Series X', icon: '🟩' },
-    { id: 'steamDeck', label: 'Steam Deck', icon: '🕹️' },
-  ];
+  const selectedGpu = gpus.find((g) => g.id === selectedGpuId) || gpus[1];
+  const selectedCpu = cpus.find((c) => c.id === selectedCpuId) || cpus[0];
+
+  // Calculate potential CPU/GPU bottleneck
+  const tierDiff = selectedGpu.tier - selectedCpu.tier;
+  
+  let targetFPS = '60 - 90 FPS';
+  let bottleneckNote = 'Balanced system configuration. Optimal frametime consistency.';
+  let settingsProfile = 'High / Ultra Preset';
+
+  if (tierDiff >= 2) {
+    targetFPS = '45 - 60 FPS (CPU Bound)';
+    bottleneckNote = 'CPU bottleneck detected! High GPU usage hampered in complex urban/heavy areas.';
+    settingsProfile = 'Lower Crowds / Physics, Max GPU Textures';
+  } else if (selectedGpu.tier === 4 && selectedCpu.tier === 4) {
+    targetFPS = '120+ FPS (Unlocked)';
+    bottleneckNote = 'Enthusiast class hardware. Zero performance constraints.';
+    settingsProfile = 'Maximum Ultra + Ray Tracing';
+  } else if (selectedGpu.tier === 1) {
+    targetFPS = '30 - 45 FPS';
+    bottleneckNote = 'Entry tier hardware. Lower settings recommended for stable 60 FPS.';
+    settingsProfile = 'Low / Medium Mix';
+  }
 
   return (
     <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      {/* Header */}
       <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
         <h3 className="text-xl font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <span className="w-2.5 h-2.5 rounded-xs bg-cyan-400 shadow-[0_0_8px_#06b6d4]"></span>
           Hardware Performance Matrix
         </h3>
-        <span className="text-xs font-mono-tech text-purple-400 font-bold uppercase">// TECHNICAL BENCHMARKS</span>
+        <span className="text-xs font-mono-tech text-purple-400 font-bold uppercase">// CUSTOM RIG PROFILER</span>
       </div>
 
-      {/* Hardware Selector Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-6">
-        {platforms.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => setSelectedPlatform(p.id as keyof PerformanceData)}
-            className={`px-3.5 py-2 rounded-xl text-xs font-mono-tech font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
-              selectedPlatform === p.id
-                ? 'bg-purple-600 text-white shadow-[0_0_15px_rgba(168,85,247,0.5)] border border-purple-400/50'
-                : 'bg-[#05070e] text-slate-400 border border-slate-800 hover:border-slate-700'
-            }`}
+      {/* Dropdown Selectors */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 font-mono-tech">
+        {/* GPU Selector */}
+        <div className="space-y-2">
+          <label className="text-xs text-slate-400 uppercase tracking-wider block font-bold">
+            // SELECT GRAPHICS CARD (GPU)
+          </label>
+          <select
+            value={selectedGpuId}
+            onChange={(e) => setSelectedGpuId(e.target.value)}
+            className="w-full bg-[#05070e] border border-slate-800 focus:border-purple-500 text-slate-100 text-xs rounded-xl p-3 outline-none transition-colors"
           >
-            <span>{p.icon}</span>
-            <span>{p.label}</span>
-          </button>
-        ))}
+            {gpus.map((gpu) => (
+              <option key={gpu.id} value={gpu.id}>
+                {gpu.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* CPU Selector */}
+        <div className="space-y-2">
+          <label className="text-xs text-slate-400 uppercase tracking-wider block font-bold">
+            // SELECT PROCESSOR (CPU)
+          </label>
+          <select
+            value={selectedCpuId}
+            onChange={(e) => setSelectedCpuId(e.target.value)}
+            className="w-full bg-[#05070e] border border-slate-800 focus:border-purple-500 text-slate-100 text-xs rounded-xl p-3 outline-none transition-colors"
+          >
+            {cpus.map((cpu) => (
+              <option key={cpu.id} value={cpu.id}>
+                {cpu.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Specs Readout Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-[#05070e]/90 p-4 rounded-xl border border-slate-800">
           <span className="text-[10px] font-mono-tech text-slate-500 uppercase tracking-widest">Target Resolution</span>
-          <p className="text-lg font-heading font-bold text-cyan-400 mt-1">{activeSpec.targetRes}</p>
+          <p className="text-lg font-heading font-bold text-cyan-400 mt-1">{selectedGpu.targetRes}</p>
         </div>
 
         <div className="bg-[#05070e]/90 p-4 rounded-xl border border-slate-800">
           <span className="text-[10px] font-mono-tech text-slate-500 uppercase tracking-widest">Framerate Expectation</span>
-          <p className="text-lg font-heading font-bold text-emerald-400 mt-1">{activeSpec.targetFPS}</p>
+          <p className="text-lg font-heading font-bold text-emerald-400 mt-1">{targetFPS}</p>
         </div>
 
         <div className="bg-[#05070e]/90 p-4 rounded-xl border border-slate-800">
           <span className="text-[10px] font-mono-tech text-slate-500 uppercase tracking-widest">Recommended Upscaler</span>
-          <p className="text-lg font-heading font-bold text-purple-300 mt-1">{activeSpec.upscaling}</p>
+          <p className="text-lg font-heading font-bold text-purple-300 mt-1">{selectedGpu.upscaler}</p>
         </div>
       </div>
 
       {/* Preset & Optimization Notes */}
       <div className="space-y-3 bg-[#05070e]/60 p-4 rounded-xl border border-slate-800/80 font-mono-tech text-xs">
         <div className="flex justify-between items-center text-slate-300 border-b border-slate-800/60 pb-2">
-          <span className="text-slate-500">// RECOMMENDED PROFILE:</span>
-          <span className="text-amber-300 font-bold">{activeSpec.settingsProfile}</span>
+          <span className="text-slate-500">// RECOMMENDED SETTINGS:</span>
+          <span className="text-amber-300 font-bold">{settingsProfile}</span>
         </div>
         <div className="flex justify-between items-center text-slate-300">
-          <span className="text-slate-500">// OPTIMIZATION NOTES:</span>
-          <span className="text-slate-300 italic">{activeSpec.notes}</span>
+          <span className="text-slate-500">// BOTTLENECK ANALYSIS:</span>
+          <span className={`italic ${tierDiff >= 2 ? 'text-rose-400 font-bold' : 'text-slate-300'}`}>
+            {bottleneckNote}
+          </span>
         </div>
       </div>
     </div>
