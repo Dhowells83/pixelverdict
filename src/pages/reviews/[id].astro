@@ -1,0 +1,116 @@
+﻿---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import StarRating from '../../components/StarRating.astro';
+
+export async function getStaticPaths() {
+  const reviews = await getCollection('reviews');
+  return reviews.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, gameTitle, description, score, verdict, coverImage, platforms, genre, publisher, pros, cons, author, releaseDate } = entry.data;
+
+// JSON-LD Schema for Google Rich Snippets
+const schemaData = {
+  "@context": "https://schema.org/",
+  "@type": "Review",
+  "itemReviewed": {
+    "@type": "VideoGame",
+    "name": gameTitle,
+    "genre": genre,
+    "gamePlatform": platforms
+  },
+  "reviewRating": {
+    "@type": "Rating",
+    "ratingValue": (score / 2).toFixed(1),
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "name": title,
+  "author": {
+    "@type": "Person",
+    "name": author
+  },
+  "reviewBody": verdict,
+  "datePublished": releaseDate.toISOString()
+};
+---
+
+<Layout title={title} description={description} image={coverImage}>
+  <!-- Inject Schema for Google Search Star Snippets -->
+  <script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+
+  <article class="max-w-4xl mx-auto relative my-4">
+    <!-- Background Ambient Glow Orbs -->
+    <div class="glow-purple absolute top-20 left-1/2 w-[500px] h-[300px] bg-purple-600/35 blur-[100px] rounded-full pointer-events-none -z-10"></div>
+    <div class="glow-cyan absolute top-40 left-1/3 w-[350px] h-[220px] bg-cyan-400/25 blur-[90px] rounded-full pointer-events-none -z-10"></div>
+
+    <!-- Banner Header -->
+    <div class="relative h-96 rounded-3xl overflow-hidden mb-8 border border-purple-900/40 shadow-[0_0_35px_rgba(0,0,0,0.8)]">
+      <img src={coverImage} alt={gameTitle} class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-t from-[#090d16] via-[#090d16]/60 to-transparent flex items-end p-8">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-xs font-mono-tech font-bold text-purple-300 bg-purple-950/80 border border-purple-500/40 px-3 py-1 rounded-full uppercase tracking-wider shadow-[0_0_12px_rgba(168,85,247,0.3)]">
+              {genre}
+            </span>
+            <span class="text-xs font-mono-tech text-slate-400">{platforms.join(' • ')}</span>
+          </div>
+          <h1 class="text-3xl md:text-5xl font-heading font-black text-white tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">{title}</h1>
+          <p class="text-xs font-mono-tech text-slate-400 mt-3">By <span class="text-purple-400 font-bold">{author}</span> • {releaseDate.toLocaleDateString()}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rating & Verdict Highlight Box -->
+    <div class="bg-[#131b2e]/80 border border-purple-500/30 backdrop-blur-md rounded-2xl p-6 mb-10 flex flex-col md:flex-row gap-6 items-center justify-between shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+      <div class="space-y-1">
+        <span class="text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-widest">// PixelVerdict Final Word</span>
+        <p class="text-xl text-slate-100 italic font-medium leading-relaxed">"{verdict}"</p>
+      </div>
+      <div class="flex flex-col items-center gap-1 bg-[#05070e]/90 px-6 py-4 rounded-xl border border-slate-800 shrink-0 shadow-inner">
+        <span class="text-xs font-mono-tech text-slate-400 uppercase tracking-wider">Score</span>
+        <StarRating score={score} />
+      </div>
+    </div>
+
+    <!-- Main Review Body -->
+    <div class="prose prose-invert prose-purple max-w-none mb-12 text-slate-300 leading-relaxed font-normal">
+      <Content />
+    </div>
+
+    <!-- Pros & Cons Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
+      <div class="bg-emerald-950/30 border border-emerald-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+        <h3 class="text-lg font-heading font-bold text-emerald-400 mb-4 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-xs bg-emerald-400 shadow-[0_0_8px_#10b981]"></span> The Good
+        </h3>
+        <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
+          {pros.map((pro) => (
+            <li class="flex items-start gap-2.5">
+              <span class="text-emerald-400 font-bold font-mono-tech">✓</span> {pro}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="bg-rose-950/30 border border-rose-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(244,63,94,0.1)]">
+        <h3 class="text-lg font-heading font-bold text-rose-400 mb-4 flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-xs bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span> The Bad
+        </h3>
+        <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
+          {cons.map((con) => (
+            <li class="flex items-start gap-2.5">
+              <span class="text-rose-400 font-bold font-mono-tech">✗</span> {con}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </article>
+</Layout>

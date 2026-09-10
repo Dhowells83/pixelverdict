@@ -1,0 +1,32 @@
+﻿---
+interface Props {
+  score: number; // Score out of 10
+  showNumeric?: boolean;
+}
+
+const { score, showNumeric = true } = Astro.props;
+const stars = score / 2; // Convert 10-point scale to 5 stars
+const fullStars = Math.floor(stars);
+const hasHalfStar = stars % 1 >= 0.5;
+const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+---
+
+<div class="inline-flex items-center gap-1.5 bg-gray-900/80 border border-purple-500/20 px-3 py-1.5 rounded-full backdrop-blur-md">
+  <div class="flex items-center text-amber-400 text-sm">
+    {Array.from({ length: fullStars }).map(() => (
+      <span class="text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]">★</span>
+    ))}
+    {hasHalfStar && (
+      <span class="relative inline-block text-gray-700">
+        ★
+        <span class="absolute top-0 left-0 overflow-hidden w-[50%] text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]">★</span>
+      </span>
+    )}
+    {Array.from({ length: emptyStars }).map(() => (
+      <span class="text-gray-700">★</span>
+    ))}
+  </div>
+  {showNumeric && (
+    <span class="text-xs font-bold text-gray-200 ml-1 font-mono">{stars.toFixed(1)}/5</span>
+  )}
+</div>

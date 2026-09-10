@@ -1,0 +1,16 @@
+﻿---
+interface Props {
+  score: number;
+}
+
+const { score } = Astro.props;
+
+let colorClass = "bg-green-500";
+if (score < 5) colorClass = "bg-red-500";
+else if (score < 8) colorClass = "bg-yellow-500";
+---
+
+<div class={`inline-flex items-center justify-center font-bold text-white px-3 py-1 rounded-lg ${colorClass} shadow-md`}>
+  <span class="text-xl leading-none">{score.toFixed(1)}</span>
+  <span class="text-xs opacity-75 ml-1 leading-none">/10</span>
+</div>

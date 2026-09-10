@@ -1,0 +1,45 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+import ReviewFilter from '../components/ReviewFilter';
+import { getCollection } from 'astro:content';
+
+const reviews = await getCollection('reviews');
+const formattedReviews = reviews
+  .sort((a, b) => b.data.releaseDate.getTime() - a.data.releaseDate.getTime())
+  .map((review) => ({
+    id: review.id,
+    gameTitle: review.data.gameTitle,
+    verdict: review.data.verdict,
+    coverImage: review.data.coverImage,
+    genre: review.data.genre,
+    platform: review.data.platforms[0],
+    author: review.data.author,
+    date: review.data.releaseDate.toLocaleDateString(),
+    score: review.data.score,
+  }));
+---
+
+<Layout title="Game Reviews & Ratings">
+  <!-- Hero Section with Glowing Effects -->
+  <section class="py-16 md:py-24 text-center relative my-4">
+    <div class="glow-purple absolute top-1/2 left-1/2 w-[480px] h-[280px] bg-purple-600/50 blur-[90px] rounded-full pointer-events-none -z-10"></div>
+    <div class="glow-cyan absolute top-1/2 left-1/2 w-[320px] h-[200px] bg-cyan-400/40 blur-[75px] rounded-full pointer-events-none -z-10"></div>
+
+    <span class="inline-block px-3.5 py-1 bg-purple-950/80 border border-purple-500/50 rounded-full text-xs font-mono-tech font-bold text-purple-300 mb-6 shadow-[0_0_20px_rgba(168,85,247,0.35)]">
+      // HIGH-PRECISION EVALUATIONS
+    </span>
+    
+    <h1 class="text-5xl md:text-7xl lg:text-8xl font-heading font-black tracking-tight mb-6 text-white uppercase leading-none drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+      NO NOISE. JUST <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400">VERDICTS.</span>
+    </h1>
+    
+    <p class="text-slate-300 text-base md:text-lg max-w-2xl mx-auto leading-relaxed font-normal drop-shadow-md">
+      Unfiltered analysis, technical breakdowns, and 5-star ratings for modern PC, PlayStation, Xbox, and Switch releases.
+    </p>
+  </section>
+
+  <!-- Interactive Filter & Review Grid -->
+  <section id="reviews" class="py-4">
+    <ReviewFilter client:load initialReviews={formattedReviews} />
+  </section>
+</Layout>

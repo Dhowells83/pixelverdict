@@ -1,0 +1,87 @@
+﻿---
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { 
+  title, 
+  description = "PixelVerdict delivers sharp, definitive 5-star gaming reviews.",
+  image = "/og-default.jpg"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="bg-[#090d16] text-slate-100 scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | PixelVerdict</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <style is:global>
+      @import "tailwindcss";
+
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #090d16;
+      }
+      h1, h2, h3, .font-heading {
+        font-family: 'Space Grotesk', sans-serif !important;
+      }
+      .font-mono-tech {
+        font-family: 'JetBrains Mono', monospace !important;
+      }
+
+      /* CSS Glow Pulse Animations */
+      @keyframes pulse-glow-purple {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.45; }
+        50% { transform: translate(-50%, -50%) scale(1.25); opacity: 0.7; }
+      }
+      @keyframes pulse-glow-cyan {
+        0%, 100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.35; }
+        50% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.6; }
+      }
+
+      .glow-purple {
+        animation: pulse-glow-purple 5s ease-in-out infinite;
+      }
+      .glow-cyan {
+        animation: pulse-glow-cyan 7s ease-in-out infinite;
+      }
+    </style>
+
+    <ClientRouter />
+  </head>
+  <body class="flex flex-col min-h-screen bg-[#090d16] text-slate-100 antialiased overflow-x-hidden">
+    <!-- Header -->
+    <header class="border-b border-purple-900/40 bg-[#090d16]/90 backdrop-blur sticky top-0 z-50 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+      <div class="max-w-6xl mx-auto px-4 h-16 flex justify-between items-center">
+        <a href="/" class="flex items-center gap-2 text-2xl font-heading font-black tracking-wider text-purple-400 hover:text-purple-300 transition-colors">
+          <span class="w-3.5 h-3.5 bg-purple-500 rounded-xs shadow-[0_0_12px_#a855f7]"></span>
+          PIXEL<span class="text-white">VERDICT</span>
+        </a>
+        <nav class="flex items-center space-x-6 text-sm font-mono-tech font-bold">
+          <a href="/" class="hover:text-purple-400 transition-colors">// HOME</a>
+          <a href="/#reviews" class="hover:text-purple-400 transition-colors">// REVIEWS</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-900 bg-[#05070e] py-8 text-center text-slate-500 text-sm font-mono-tech">
+      <p>&copy; {new Date().getFullYear()} PixelVerdict. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
