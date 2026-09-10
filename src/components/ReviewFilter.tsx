@@ -7,6 +7,7 @@ interface ReviewItem {
   coverImage: string;
   genre: string;
   platform: string;
+  platforms?: string[];
   author: string;
   date: string;
   score: number;
@@ -24,14 +25,16 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 12;
 
-  // Dynamically extract unique genres and platforms for dropdown options
+  // Extract unique genres
   const genres = useMemo(() => {
     const list = Array.from(new Set(initialReviews.map((r) => r.genre).filter(Boolean)));
     return ['ALL', ...list.sort()];
   }, [initialReviews]);
 
+  // Extract all unique platforms across all reviews
   const platforms = useMemo(() => {
-    const list = Array.from(new Set(initialReviews.map((r) => r.platform).filter(Boolean)));
+    const allPlatforms = initialReviews.flatMap((r) => r.platforms || [r.platform]).filter(Boolean);
+    const list = Array.from(new Set(allPlatforms));
     return ['ALL', ...list.sort()];
   }, [initialReviews]);
 
@@ -39,13 +42,19 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
   const filteredReviews = useMemo(() => {
     return initialReviews.filter((review) => {
       const starRating = review.score / 2;
+      const reviewPlatforms = review.platforms || [review.platform];
+
       const matchesSearch =
         review.gameTitle.toLowerCase().includes(search.toLowerCase()) ||
         review.genre.toLowerCase().includes(search.toLowerCase()) ||
-        review.platform.toLowerCase().includes(search.toLowerCase());
+        reviewPlatforms.some(p => p.toLowerCase().includes(search.toLowerCase()));
 
       const matchesGenre = selectedGenre === 'ALL' || review.genre.toLowerCase() === selectedGenre.toLowerCase();
-      const matchesPlatform = selectedPlatform === 'ALL' || review.platform.toLowerCase() === selectedPlatform.toLowerCase();
+      
+      const matchesPlatform =
+        selectedPlatform === 'ALL' ||
+        reviewPlatforms.some(p => p.toLowerCase() === selectedPlatform.toLowerCase());
+
       const matchesRating = minRating === 0 || starRating >= minRating;
 
       return matchesSearch && matchesGenre && matchesPlatform && matchesRating;
@@ -174,6 +183,8 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedReviews.map((review) => {
               const starScore = (review.score / 2).toFixed(1);
+              const displayPlatforms = review.platforms ? review.platforms.join(' • ') : review.platform;
+
               return (
                 <a
                   key={review.id}
@@ -199,7 +210,7 @@ export default function ReviewFilter({ initialReviews }: FilterProps) {
                       <div className="flex items-center gap-2 text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-wider mb-2">
                         <span className="text-cyan-400">{review.genre}</span>
                         <span className="text-slate-600">•</span>
-                        <span className="text-slate-400">{review.platform}</span>
+                        <span className="text-slate-400 truncate max-w-[150px]">{displayPlatforms}</span>
                       </div>
 
                       <h3 className="text-2xl font-heading font-bold text-white group-hover:text-purple-300 transition-colors tracking-tight">
