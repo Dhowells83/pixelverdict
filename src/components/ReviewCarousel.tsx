@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface ReviewItem {
@@ -20,6 +20,7 @@ interface CarouselProps {
 export default function ReviewCarousel({ reviews }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   if (!reviews || reviews.length === 0) return null;
 
@@ -32,6 +33,17 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
     setDirection(-1);
     setCurrentIndex((prevIndex) => (prevIndex - 1 + reviews.length) % reviews.length);
   };
+
+  // Auto-play timer (switches every 5000ms unless hovered)
+  useEffect(() => {
+    if (isPaused) return;
+
+    const timer = setInterval(() => {
+      nextSlide();
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, [currentIndex, isPaused, reviews.length]);
 
   const currentReview = reviews[currentIndex];
   const starScore = (currentReview.score / 2).toFixed(1);
@@ -57,7 +69,11 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto my-8 px-2">
+    <div 
+      className="relative w-full max-w-4xl mx-auto my-8 px-2"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       {/* Carousel Container */}
       <div className="relative overflow-hidden rounded-3xl bg-[#131b2e]/80 border border-purple-900/40 shadow-[0_0_40px_rgba(168,85,247,0.15)] backdrop-blur-md min-h-[420px] md:min-h-[360px] flex items-center">
         <AnimatePresence custom={direction} mode="wait">
@@ -136,22 +152,27 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
           ))}
         </div>
 
-        {/* Arrow Buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={prevSlide}
-            className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
-            aria-label="Previous Slide"
-          >
-            ←
-          </button>
-          <button
-            onClick={nextSlide}
-            className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
-            aria-label="Next Slide"
-          >
-            →
-          </button>
+        {/* Arrow Buttons & Pause Status Indicator */}
+        <div className="flex items-center gap-3">
+          {isPaused && (
+            <span className="text-[10px] font-mono-tech text-purple-400 uppercase tracking-widest">// PAUSED</span>
+          )}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={prevSlide}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
+              aria-label="Previous Slide"
+            >
+              ←
+            </button>
+            <button
+              onClick={nextSlide}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all"
+              aria-label="Next Slide"
+            >
+              →
+            </button>
+          </div>
         </div>
       </div>
     </div>
