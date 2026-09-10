@@ -62,36 +62,34 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
 
   const card3DVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 320 : -320,
-      y: 20,
-      z: -300,
-      rotateY: dir > 0 ? 45 : -45,
-      rotateX: 15,
+      x: dir > 0 ? 300 : -300,
+      y: 15,
+      z: -200,
+      rotateY: dir > 0 ? 30 : -30,
       opacity: 0,
-      scale: 0.75,
+      scale: 0.85,
     }),
     center: {
       x: 0,
       y: 0,
       z: 0,
-      rotateY: mousePos.x * 20,
-      rotateX: -mousePos.y * 20,
+      rotateY: mousePos.x * 15,
+      rotateX: -mousePos.y * 15,
       opacity: 1,
       scale: 1,
       transition: {
-        duration: 0.55,
+        duration: 0.5,
         ease: [0.16, 1, 0.3, 1],
       },
     },
     exit: (dir: number) => ({
-      x: dir < 0 ? 320 : -320,
-      y: -20,
-      z: -300,
-      rotateY: dir < 0 ? 45 : -45,
-      rotateX: -15,
+      x: dir < 0 ? 300 : -300,
+      y: -15,
+      z: -200,
+      rotateY: dir < 0 ? 30 : -30,
       opacity: 0,
-      scale: 0.75,
-      transition: { duration: 0.45, ease: 'easeInOut' },
+      scale: 0.85,
+      transition: { duration: 0.4, ease: 'easeInOut' },
     }),
   };
 
@@ -103,21 +101,27 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* 3D Stage */}
+      {/* 3D Stage Container */}
       <div 
-        className="relative min-h-[420px] md:min-h-[360px] flex items-center justify-center cursor-pointer"
+        className="relative min-h-[420px] md:min-h-[360px] flex items-center justify-center select-none"
         style={{ transformStyle: 'preserve-3d' }}
       >
+        {/* Flat 2D Hit-Box Anchor: Sits above the 3D perspective transform layer */}
+        <a 
+          href={`/reviews/${currentReview.id}`} 
+          className="absolute inset-0 z-50 cursor-pointer rounded-3xl"
+          aria-label={`Read verdict for ${currentReview.gameTitle}`}
+        />
+
         <AnimatePresence custom={direction} mode="wait">
-          <motion.a
+          <motion.div
             key={currentIndex}
-            href={`/reviews/${currentReview.id}`}
             custom={direction}
             variants={card3DVariants}
             initial="enter"
             animate="center"
             exit="exit"
-            className="group w-full grid grid-cols-1 md:grid-cols-12 rounded-3xl bg-[#131b2e]/95 border-2 border-purple-500/50 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(168,85,247,0.3)] backdrop-blur-xl overflow-hidden block"
+            className="group w-full grid grid-cols-1 md:grid-cols-12 rounded-3xl bg-[#131b2e] border-2 border-purple-500/50 shadow-[0_30px_70px_rgba(0,0,0,0.9),0_0_40px_rgba(168,85,247,0.3)] backdrop-blur-xl overflow-hidden relative pointer-events-none"
             style={{ transformStyle: 'preserve-3d' }}
           >
             {/* Image Side */}
@@ -127,18 +131,18 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
                 alt={currentReview.gameTitle}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-cyan-400/20 pointer-events-none"></div>
+              <div className="absolute inset-0 bg-gradient-to-tr from-purple-600/20 via-transparent to-cyan-400/20"></div>
               <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#090d16] via-transparent to-transparent"></div>
 
               {/* Star Badge */}
-              <div className="absolute top-4 left-4 bg-slate-950/90 border border-amber-500/50 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+              <div className="absolute top-4 left-4 bg-slate-950/90 border border-amber-500/50 px-3 py-1.5 rounded-full backdrop-blur-md flex items-center gap-1.5 shadow-[0_10px_20px_rgba(0,0,0,0.8)] z-10">
                 <span className="text-amber-400 text-sm">★</span>
                 <span className="text-xs font-bold text-amber-300 font-mono-tech">{starScore}/5</span>
               </div>
             </div>
 
             {/* Content Side */}
-            <div className="md:col-span-6 p-6 md:p-8 flex flex-col justify-between">
+            <div className="md:col-span-6 p-6 md:p-8 flex flex-col justify-between relative z-10">
               <div>
                 <div className="flex items-center gap-2 text-xs font-mono-tech font-bold text-purple-400 uppercase tracking-wider mb-2">
                   <span className="text-cyan-400">{currentReview.genre}</span>
@@ -162,22 +166,21 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
                 <span className="text-slate-500">By {currentReview.author}</span>
               </div>
             </div>
-          </motion.a>
+          </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Navigation Controls */}
-      <div className="flex items-center justify-between mt-6 px-2">
+      <div className="flex items-center justify-between mt-6 px-2 relative z-50">
         <div className="flex items-center gap-2">
           {reviews.map((_, idx) => (
             <button
               key={idx}
-              onClick={(e) => {
-                e.preventDefault();
+              onClick={() => {
                 setDirection(idx > currentIndex ? 1 : -1);
                 setCurrentIndex(idx);
               }}
-              className={`h-2 rounded-full transition-all ${
+              className={`h-2 rounded-full transition-all cursor-pointer ${
                 idx === currentIndex
                   ? 'w-8 bg-purple-500 shadow-[0_0_12px_#a855f7]'
                   : 'w-2 bg-slate-800 hover:bg-slate-700'
@@ -188,25 +191,19 @@ export default function ReviewCarousel({ reviews }: CarouselProps) {
 
         <div className="flex items-center gap-3">
           {isPaused && (
-            <span className="text-[10px] font-mono-tech text-purple-400 uppercase tracking-widest">// CLICK TO READ</span>
+            <span className="text-[10px] font-mono-tech text-purple-400 uppercase tracking-widest">// CLICK TO OPEN</span>
           )}
           <div className="flex items-center gap-2">
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                prevSlide();
-              }}
-              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg"
+              onClick={prevSlide}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg cursor-pointer"
               aria-label="Previous Slide"
             >
               ←
             </button>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                nextSlide();
-              }}
-              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg"
+              onClick={nextSlide}
+              className="w-10 h-10 rounded-xl bg-[#131b2e] border border-slate-800 hover:border-purple-500/60 text-slate-300 hover:text-white flex items-center justify-center font-mono-tech text-lg transition-all shadow-lg cursor-pointer"
               aria-label="Next Slide"
             >
               →
