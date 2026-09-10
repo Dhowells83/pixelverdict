@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import StarRating from '../../components/StarRating.astro';
 import PerformanceMatrix from '../../components/PerformanceMatrix';
 import ScoreRadar from '../../components/ScoreRadar';
+import CompletionTracker from '../../components/CompletionTracker';
 
 export async function getStaticPaths() {
   const reviews = await getCollection('reviews');
@@ -25,7 +26,6 @@ const twitterShare = `https://twitter.com/intent/tweet?text=${shareText}&url=${e
 const redditShare = `https://www.reddit.com/submit?url=${encodedURL}&title=${encodeURIComponent(`${gameTitle} Review - PixelVerdict`)}`;
 const facebookShare = `https://www.facebook.com/sharer/sharer.php?u=${encodedURL}`;
 
-// Example custom axis score distribution based on the total score
 const customRadarAxes = [
   { label: 'Graphics & Art', score: Math.min(10, score + 0.5) },
   { label: 'Gameplay', score: score },
@@ -70,13 +70,14 @@ const customRadarAxes = [
       </div>
     </div>
 
-    <!-- Main Content & Radar Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+    <!-- Main Review Content & Interactive Widgets -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
       <div class="lg:col-span-7 prose prose-invert prose-purple max-w-none text-slate-300 leading-relaxed font-normal">
         <Content />
       </div>
-      <div class="lg:col-span-5">
+      <div class="lg:col-span-5 space-y-6">
         <ScoreRadar client:load axes={customRadarAxes} />
+        <CompletionTracker client:load mainStoryHours={25} mainExtraHours={50} completionistHours={95} />
       </div>
     </div>
 
@@ -112,4 +113,21 @@ const customRadarAxes = [
       </div>
     </div>
   </article>
+
+  <script>
+    const btn = document.getElementById('copy-link-btn');
+    const label = document.getElementById('copy-text');
+
+    btn?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        if (label) label.textContent = 'Copied!';
+        setTimeout(() => {
+          if (label) label.textContent = 'Copy Link';
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy URL: ', err);
+      }
+    });
+  </script>
 </Layout>
