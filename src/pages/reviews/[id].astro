@@ -107,40 +107,40 @@ const customRadarAxes = [
         <CompletionTracker client:load mainStoryHours={25} mainExtraHours={50} completionistHours={95} />
       </div>
 
+      <!-- Pros & Cons Grid (The Good / The Bad) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-6">
+        <div class="bg-emerald-950/30 border border-emerald-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+          <h3 class="text-lg font-heading font-bold text-emerald-400 mb-4 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-xs bg-emerald-400 shadow-[0_0_8px_#10b981]"></span> The Good
+          </h3>
+          <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
+            {pros.map((pro) => (
+              <li class="flex items-start gap-2.5">
+                <span class="text-emerald-400 font-bold font-mono-tech">✓</span> {pro}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="bg-rose-950/30 border border-rose-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(244,63,94,0.1)]">
+          <h3 class="text-lg font-heading font-bold text-rose-400 mb-4 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-xs bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span> The Bad
+          </h3>
+          <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
+            {cons.map((con) => (
+              <li class="flex items-start gap-2.5">
+                <span class="text-rose-400 font-bold font-mono-tech">✗</span> {con}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
       <!-- Full Width: Verdict Split (Community vs Critic) -->
       <VerdictSplit client:load reviewId={entry.id} criticScore={score} />
 
       <!-- Full Width: Hardware Performance Matrix -->
       <PerformanceMatrix client:load />
-    </div>
-
-    <!-- Pros & Cons Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-10">
-      <div class="bg-emerald-950/30 border border-emerald-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.1)]">
-        <h3 class="text-lg font-heading font-bold text-emerald-400 mb-4 flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-xs bg-emerald-400 shadow-[0_0_8px_#10b981]"></span> The Good
-        </h3>
-        <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
-          {pros.map((pro) => (
-            <li class="flex items-start gap-2.5">
-              <span class="text-emerald-400 font-bold font-mono-tech">✓</span> {pro}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div class="bg-rose-950/30 border border-rose-500/30 p-6 rounded-2xl backdrop-blur-md shadow-[0_0_20px_rgba(244,63,94,0.1)]">
-        <h3 class="text-lg font-heading font-bold text-rose-400 mb-4 flex items-center gap-2">
-          <span class="w-2.5 h-2.5 rounded-xs bg-rose-400 shadow-[0_0_8px_#f43f5e]"></span> The Bad
-        </h3>
-        <ul class="space-y-2.5 text-sm text-slate-300 font-medium">
-          {cons.map((con) => (
-            <li class="flex items-start gap-2.5">
-              <span class="text-rose-400 font-bold font-mono-tech">✗</span> {con}
-            </li>
-          ))}
-        </ul>
-      </div>
     </div>
   </article>
 
