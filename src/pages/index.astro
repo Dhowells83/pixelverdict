@@ -5,6 +5,8 @@ import ReviewFilter from '../components/ReviewFilter';
 import { getCollection } from 'astro:content';
 
 const reviews = await getCollection('reviews');
+
+// Format all reviews sorted by release date for the main review list/filter
 const formattedReviews = reviews
   .sort((a, b) => b.data.releaseDate.getTime() - a.data.releaseDate.getTime())
   .map((review) => ({
@@ -18,6 +20,11 @@ const formattedReviews = reviews
     date: review.data.releaseDate.toLocaleDateString(),
     score: review.data.score,
   }));
+
+// Top 5 highest rated reviews specifically for the carousel
+const topRatedReviews = [...formattedReviews]
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 5);
 ---
 
 <Layout title="Game Reviews & Ratings">
@@ -39,13 +46,13 @@ const formattedReviews = reviews
     </p>
   </section>
 
-  <!-- Featured Reviews Carousel -->
+  <!-- Featured Top 5 Carousel -->
   <section class="py-4">
     <div class="flex items-center gap-2 mb-2 font-mono-tech text-xs text-purple-400 font-bold uppercase tracking-widest justify-center">
       <span class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7]"></span>
-      // FEATURED VERDICTS
+      // TOP 5 HIGHEST RATED VERDICTS
     </div>
-    <ReviewCarousel client:load reviews={formattedReviews} />
+    <ReviewCarousel client:load reviews={topRatedReviews} />
   </section>
 
   <!-- Interactive Filter & Review Grid -->
