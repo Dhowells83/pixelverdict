@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 
 export interface ScoreAxis {
   label: string;
@@ -47,7 +47,7 @@ export default function ScoreRadar({ axes = defaultAxes, title = "Verdict Breakd
   const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
 
   return (
-    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] my-8 max-w-md mx-auto">
+    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] h-full max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
         <h3 className="text-lg font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">

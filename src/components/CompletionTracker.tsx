@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 
 interface CompletionProps {
   mainStoryHours?: number;
@@ -33,7 +33,7 @@ export default function CompletionTracker({
   const maxHours = Math.max(completionistHours, 1);
 
   return (
-    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] my-8">
+    <div className="bg-[#131b2e]/80 border border-purple-900/40 rounded-2xl p-6 backdrop-blur-md shadow-[0_0_30px_rgba(0,0,0,0.5)] h-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-800">
         <h3 className="text-lg font-heading font-bold text-white uppercase tracking-wider flex items-center gap-2">
