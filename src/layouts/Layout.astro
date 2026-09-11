@@ -183,7 +183,7 @@ const particles = Array.from({ length: 28 }, (_, i) => ({
       ))}
     </div>
 
-    <!-- Navigation Header with Theme Toggle -->
+    <!-- Navigation Header with Schedule Link & Theme Toggle -->
     <header class="sticky top-0 z-50 bg-[var(--header-bg)] border-b border-[var(--border-color)] backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
       <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
         <!-- Logo -->
@@ -216,7 +216,8 @@ const particles = Array.from({ length: 28 }, (_, i) => ({
 
         <!-- Header Nav Links & Theme Switcher -->
         <nav class="flex items-center gap-4 md:gap-6 font-mono-tech text-xs font-bold">
-          <a href="/#reviews" class="text-slate-300 hover:text-[var(--accent-cyan)] transition-colors tracking-wider uppercase">// ALL REVIEWS</a>
+          <a href="/#reviews" class="text-slate-300 hover:text-[var(--accent-cyan)] transition-colors tracking-wider uppercase">// REVIEWS</a>
+          <a href="/schedule" class="text-slate-300 hover:text-[var(--accent-cyan)] transition-colors tracking-wider uppercase">// SCHEDULE</a>
           <ThemeToggle client:load />
         </nav>
       </div>
