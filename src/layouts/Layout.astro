@@ -18,7 +18,7 @@ const verdictLetters = "VERDICT".split('');
 ---
 
 <!doctype html>
-<html lang="en" class="bg-[#070a12] text-slate-100 scroll-smooth">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -44,92 +44,68 @@ const verdictLetters = "VERDICT".split('');
         --font-pixel: 'Press Start 2P', monospace;
       }
 
-      body {
-        font-family: 'Inter', sans-serif;
-        background-color: #070a12;
+      html, body {
+        background-color: #05070e !important;
         color: #f1f5f9;
         min-height: 100vh;
         overflow-x: hidden;
+        margin: 0;
       }
 
       .font-heading { font-family: var(--font-heading) !important; }
       .font-mono-tech { font-family: var(--font-mono) !important; }
       .font-pixel-accent { font-family: var(--font-pixel) !important; }
 
-      /* Visual Card Glassmorphism Fallback */
+      /* Visual Card Glassmorphism */
       .bg-\[\#131b2e\]\/80, .bg-\[\#131b2e\]\/70, .bg-\[\#131b2e\] {
-        background-color: rgba(19, 27, 46, 0.85) !important;
+        background-color: rgba(19, 27, 46, 0.75) !important;
+        backdrop-filter: blur(12px);
       }
       
       .border-purple-900\/40, .border-purple-500\/30, .border-slate-800 {
         border-color: rgba(168, 85, 247, 0.35) !important;
       }
 
-      /* High-Visibility Animated Neon Glow Orbs */
-      @keyframes floatPurple {
-        0%, 100% {
-          transform: translate(0px, 0px) scale(1);
-          opacity: 0.4;
-        }
-        50% {
-          transform: translate(120px, 80px) scale(1.25);
-          opacity: 0.7;
-        }
+      /* Animated Ambient Background Elements */
+      @keyframes floatPurpleOrb {
+        0% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
+        50% { transform: translate(180px, 100px) scale(1.3); opacity: 0.85; }
+        100% { transform: translate(0px, 0px) scale(1); opacity: 0.6; }
       }
 
-      @keyframes floatCyan {
-        0%, 100% {
-          transform: translate(0px, 0px) scale(1);
-          opacity: 0.35;
-        }
-        50% {
-          transform: translate(-140px, -60px) scale(1.3);
-          opacity: 0.65;
-        }
+      @keyframes floatCyanOrb {
+        0% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
+        50% { transform: translate(-160px, -90px) scale(1.25); opacity: 0.8; }
+        100% { transform: translate(0px, 0px) scale(1); opacity: 0.5; }
       }
 
-      .glow-orb-purple {
-        position: fixed;
-        top: 10%;
-        left: 15%;
-        width: 500px;
-        height: 500px;
-        background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0) 70%);
-        filter: blur(80px);
-        animation: floatPurple 14s ease-in-out infinite;
-        pointer-events: none;
-        z-index: -1;
+      @keyframes gridPulse {
+        0%, 100% { opacity: 0.12; }
+        50% { opacity: 0.28; }
       }
 
-      .glow-orb-cyan {
-        position: fixed;
-        top: 45%;
-        right: 10%;
-        width: 550px;
-        height: 550px;
-        background: radial-gradient(circle, rgba(6, 182, 212, 0.45) 0%, rgba(6, 182, 212, 0) 70%);
-        filter: blur(90px);
-        animation: floatCyan 18s ease-in-out infinite;
-        pointer-events: none;
-        z-index: -1;
+      .bg-animated-purple {
+        animation: floatPurpleOrb 12s ease-in-out infinite;
       }
 
-      .cyber-grid-overlay {
-        position: fixed;
-        inset: 0;
-        background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                          linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-        background-size: 50px 50px;
-        pointer-events: none;
-        z-index: -2;
+      .bg-animated-cyan {
+        animation: floatCyanOrb 15s ease-in-out infinite;
       }
 
-      /* Glow Effects */
+      .bg-cyber-grid {
+        background-image: 
+          linear-gradient(to right, rgba(168, 85, 247, 0.15) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(6, 182, 212, 0.15) 1px, transparent 1px);
+        background-size: 60px 60px;
+        animation: gridPulse 8s ease-in-out infinite;
+      }
+
+      /* Text Glow */
       .text-glow-cyan {
         text-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
       }
 
-      /* Logo Letter Hop Animation Keyframes */
+      /* Logo Letter Hop Animation */
       @keyframes pixelHop {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-6px); }
@@ -147,7 +123,7 @@ const verdictLetters = "VERDICT".split('');
 
       /* Custom Scrollbar */
       ::-webkit-scrollbar { width: 8px; height: 8px; }
-      ::-webkit-scrollbar-track { background: #070a12; }
+      ::-webkit-scrollbar-track { background: #05070e; }
       ::-webkit-scrollbar-thumb {
         background: #1e293b;
         border-radius: 4px;
@@ -156,15 +132,28 @@ const verdictLetters = "VERDICT".split('');
       ::-webkit-scrollbar-thumb:hover { background: #a855f7; }
     </style>
   </head>
-  <body class="min-h-screen flex flex-col justify-between selection:bg-purple-600 selection:text-white bg-[#070a12] text-slate-100 relative">
+  <body class="min-h-screen flex flex-col justify-between selection:bg-purple-600 selection:text-white relative">
     
-    <!-- Guaranteed CSS Animated Background Elements -->
-    <div class="cyber-grid-overlay"></div>
-    <div class="glow-orb-purple"></div>
-    <div class="glow-orb-cyan"></div>
+    <!-- HIGH-VISIBILITY ANIMATED BACKGROUND LAYER -->
+    <div class="fixed inset-0 pointer-events-none" style="z-index: 0;">
+      <!-- Cyber Grid Overlay -->
+      <div class="absolute inset-0 bg-cyber-grid"></div>
+
+      <!-- Neon Purple Glowing Orb -->
+      <div 
+        className="bg-animated-purple absolute top-[-100px] left-[-100px] w-[650px] h-[650px] rounded-full"
+        style="background: radial-gradient(circle, rgba(168, 85, 247, 0.4) 0%, rgba(168, 85, 247, 0) 70%); filter: blur(60px);"
+      ></div>
+
+      <!-- Neon Cyan Glowing Orb -->
+      <div 
+        className="bg-animated-cyan absolute top-[40%] right-[-100px] w-[600px] h-[600px] rounded-full"
+        style="background: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(6, 182, 212, 0) 70%); filter: blur(60px);"
+      ></div>
+    </div>
 
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-50 bg-[#0d1322]/95 border-b border-purple-500/30 backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
+    <header class="sticky top-0 z-50 bg-[#0d1322]/90 border-b border-purple-500/30 backdrop-blur-md shadow-[0_4px_25px_rgba(0,0,0,0.6)]">
       <div class="max-w-6xl mx-auto px-4 py-3.5 flex items-center justify-between">
         <!-- Logo -->
         <a href="/" class="logo-container group flex items-center gap-3">
@@ -205,12 +194,12 @@ const verdictLetters = "VERDICT".split('');
     </header>
 
     <!-- Main Body Container -->
-    <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow relative z-10">
+    <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-grow relative" style="z-index: 10;">
       <slot />
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-purple-900/30 bg-[#05070e] py-8 text-center text-xs font-mono-tech text-slate-500 relative z-10">
+    <footer class="border-t border-purple-900/30 bg-[#05070e] py-8 text-center text-xs font-mono-tech text-slate-500 relative" style="z-index: 10;">
       <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
           <span class="w-2.5 h-2.5 rounded-full bg-purple-500 shadow-[0_0_8px_#a855f7] animate-pulse"></span>
